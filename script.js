@@ -15,11 +15,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Clear existing content
                 instagramFeed.innerHTML = '';
                 
+                // Show only first 3 posts initially
+                const initialDisplayCount = 3;
+                let currentlyShown = initialDisplayCount;
+                
                 // Process each post
-                data.data.forEach(post => {
+                data.data.forEach((post, index) => {
                     // Create gallery item container
                     const galleryItem = document.createElement('div');
                     galleryItem.className = 'gallery-item';
+                    
+                    // Hide posts beyond the initial count
+                    if (index >= initialDisplayCount) {
+                        galleryItem.classList.add('hidden-post');
+                        galleryItem.style.display = 'none';
+                    }
                     
                     // Create image element
                     const img = document.createElement('img');
@@ -48,6 +58,41 @@ document.addEventListener('DOMContentLoaded', function() {
                     galleryItem.appendChild(overlay);
                     instagramFeed.appendChild(galleryItem);
                 });
+                
+                // Add "Show more" button if there are more than 3 posts
+                if (data.data.length > initialDisplayCount) {
+                    const loadMoreContainer = document.createElement('div');
+                    loadMoreContainer.className = 'load-more-container';
+                    
+                    const loadMoreBtn = document.createElement('button');
+                    loadMoreBtn.className = 'btn load-more-btn';
+                    loadMoreBtn.textContent = 'Mostra di più';
+                    
+                    loadMoreBtn.addEventListener('click', function() {
+                        const hiddenPosts = document.querySelectorAll('.hidden-post');
+                        
+                        // Show the next 6 posts (or whatever remains)
+                        let counter = 0;
+                        hiddenPosts.forEach(post => {
+                            if (post.style.display === 'none' && counter < 6) {
+                                post.style.display = '';
+                                counter++;
+                                currentlyShown++;
+                            }
+                        });
+                        
+                        // If all posts are now visible, change button to redirect to Instagram
+                        if (currentlyShown >= data.data.length) {
+                            loadMoreBtn.textContent = 'Vedi tutti su Instagram';
+                            loadMoreBtn.addEventListener('click', function() {
+                                window.open('https://www.instagram.com/', '_blank');
+                            }, { once: true });
+                        }
+                    });
+                    
+                    loadMoreContainer.appendChild(loadMoreBtn);
+                    instagramFeed.parentNode.appendChild(loadMoreContainer);
+                }
             })
             .catch(error => {
                 console.error('Error fetching Instagram feed:', error);
@@ -57,56 +102,42 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>Non è stato possibile caricare il feed Instagram. Si prega di riprovare più tardi.</p>
                     </div>
                 `;
+                
+                // Create placeholder posts
+                createPlaceholderPosts();
             });
     }
     
-    // Function to simulate Instagram feed if API is not available
-    function simulateInstagramFeed() {
-        // Sample data for testing
-        const samplePosts = [
-            {
-                media_url: '/api/placeholder/400/400',
-                caption: 'Workshop di fotografia con i giovani del forum. Un'esperienza incredibile!',
-                permalink: '#'
-            },
-            {
-                media_url: '/api/placeholder/400/400',
-                caption: 'Giornata ecologica nel nostro comune. Grazie a tutti i partecipanti!',
-                permalink: '#'
-            },
-            {
-                media_url: '/api/placeholder/400/400',
-                caption: 'Riunione mensile del Forum dei Giovani. Tante nuove idee in arrivo!',
-                permalink: '#'
-            },
-            {
-                media_url: '/api/placeholder/400/400',
-                caption: 'Escursione sui monti Picentini. Scopriamo la bellezza del nostro territorio.',
-                permalink: '#'
-            },
-            {
-                media_url: '/api/placeholder/400/400',
-                caption: 'Assemblea annuale del Forum. Bilancio positivo e nuovi progetti.',
-                permalink: '#'
-            },
-            {
-                media_url: '/api/placeholder/400/400',
-                caption: 'Incontro con le scuole per parlare di partecipazione giovanile.',
-                permalink: '#'
-            }
+    // Function to create placeholder posts when the API fails
+    function createPlaceholderPosts() {
+        const posts = [
+            { caption: "Evento di discussione pubblica" },
+            { caption: "Attività con i giovani del territorio" },
+            { caption: "Incontro con le autorità locali" },
+            { caption: "Workshop formativo per i giovani" },
+            { caption: "Evento culturale a San Cipriano" },
+            { caption: "Iniziativa ambientale" }
         ];
         
-        // Clear existing content
         instagramFeed.innerHTML = '';
         
-        // Create gallery items
-        samplePosts.forEach(post => {
+        // Show only first 3 posts initially
+        const initialDisplayCount = 3;
+        let currentlyShown = initialDisplayCount;
+        
+        posts.forEach((post, index) => {
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
             
+            // Hide posts beyond the initial count
+            if (index >= initialDisplayCount) {
+                galleryItem.classList.add('hidden-post');
+                galleryItem.style.display = 'none';
+            }
+            
             const img = document.createElement('img');
-            img.src = post.media_url;
-            img.alt = 'Instagram Post';
+            img.src = "/api/placeholder/400/400";
+            img.alt = 'Forum dei Giovani post';
             
             const overlay = document.createElement('div');
             overlay.className = 'gallery-overlay';
@@ -119,14 +150,93 @@ document.addEventListener('DOMContentLoaded', function() {
             galleryItem.appendChild(overlay);
             instagramFeed.appendChild(galleryItem);
         });
+        
+        // Add "Show more" button if there are more than 3 posts
+        if (posts.length > initialDisplayCount) {
+            const loadMoreContainer = document.createElement('div');
+            loadMoreContainer.className = 'load-more-container';
+            
+            const loadMoreBtn = document.createElement('button');
+            loadMoreBtn.className = 'btn load-more-btn';
+            loadMoreBtn.textContent = 'Mostra di più';
+            
+            loadMoreBtn.addEventListener('click', function() {
+                const hiddenPosts = document.querySelectorAll('.hidden-post');
+                
+                // Show the next 6 posts (or whatever remains)
+                let counter = 0;
+                hiddenPosts.forEach(post => {
+                    if (post.style.display === 'none' && counter < 6) {
+                        post.style.display = '';
+                        counter++;
+                        currentlyShown++;
+                    }
+                });
+                
+                // If all posts are now visible, change button to redirect to Instagram
+                if (currentlyShown >= posts.length) {
+                    loadMoreBtn.textContent = 'Vedi tutti su Instagram';
+                    loadMoreBtn.addEventListener('click', function() {
+                        window.open('https://www.instagram.com/', '_blank');
+                    }, { once: true });
+                }
+            });
+            
+            loadMoreContainer.appendChild(loadMoreBtn);
+            instagramFeed.parentNode.appendChild(loadMoreContainer);
+        }
     }
     
-    // Try to load Instagram feed, fall back to simulation if API token is not set
-    if (accessToken === '____') {
-        // API token not set, use simulation
-        simulateInstagramFeed();
-    } else {
-        // API token set, try to load real feed
-        loadInstagramFeed();
+    // Try to load Instagram feed, fallback to placeholder if fails
+    loadInstagramFeed();
+
+    // Menu functionality
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    const navLinks = document.querySelectorAll('.main-nav a');
+    
+    if (menuToggle) {
+        // Ensure menu toggle works correctly
+        menuToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.style.overflow = 'hidden';
+                mainNav.classList.add('active');
+            } else {
+                document.body.style.overflow = '';
+                mainNav.classList.remove('active');
+            }
+        });
+        
+        // Close menu when clicking on navigation links
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (menuToggle.checked) {
+                    menuToggle.checked = false;
+                    document.body.style.overflow = '';
+                    mainNav.classList.remove('active');
+                }
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (menuToggle.checked && 
+                !event.target.closest('.main-nav') && 
+                !event.target.closest('.menu-icon') &&
+                !event.target.closest('#menu-toggle')) {
+                menuToggle.checked = false;
+                document.body.style.overflow = '';
+                mainNav.classList.remove('active');
+            }
+        });
     }
+    
+    // Handle resize events
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768 && menuToggle && menuToggle.checked) {
+            menuToggle.checked = false;
+            document.body.style.overflow = '';
+            mainNav.classList.remove('active');
+        }
+    });
 });
