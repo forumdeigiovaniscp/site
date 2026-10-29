@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caccia all'indizio - Sagra della Castagna 2026</title>
+    <meta name="theme-color" content="#7B2E1E">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="img/sagra-logo-emblema.svg" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,600..900,0..100,0..1;1,9..144,400..600,0..100,0..1&family=Karla:wght@400;700&family=Marcellus&display=swap" rel="stylesheet">
+
+    <style>
+        /* Palette e font della Sagra della Castagna (lasagradellacastagna.net) */
+        :root {
+            --castagna: #7B2E1E;
+            --castagna-scuro: #5A1F13;
+            --carta: #FBF4E8;
+            --crema: #F5EBDA;
+            --sabbia: #E9D5B8;
+            --bordo: #E6D3B8;
+            --oro: #F2C66B;
+            --oro-chiaro: #FFE1A6;
+            --ocra: #E2A13A;
+            --arancio: #C2622D;
+            --petrolio: #2E5F5D;
+            --testo: #3A1E14;
+            --testo-2: #5A3A2C;
+            --testo-su-scuro: #F1DFC8;
+            --raggio: 20px;
+            --ombra-card: 0 6px 18px rgba(91, 40, 20, .08);
+            --gutter: clamp(16px, 4vw, 24px);
+            --font-titoli: 'Fraunces', Georgia, serif;
+            --font-testo: 'Karla', system-ui, sans-serif;
+            --font-occhielli: 'Marcellus', Georgia, serif;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--crema);
+            color: var(--testo);
+            font-family: var(--font-testo);
+            font-size: 17px;
+            line-height: 1.55;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        h1, h2, h3, p { margin: 0; }
+
+        img { max-width: 100%; height: auto; display: block; }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 3px solid var(--ocra);
+            outline-offset: 3px;
+        }
+
+        /* Striscia superiore */
+        .topbar {
+            background: var(--petrolio);
+            color: var(--carta);
+            text-align: center;
+            font-family: var(--font-occhielli);
+            letter-spacing: .08em;
+            font-size: 14px;
+            padding: 9px var(--gutter);
+        }
+
+        /* Testata */
+        .hero {
+            background: var(--castagna);
+            color: var(--carta);
+            text-align: center;
+            padding: clamp(36px, 7vw, 64px) var(--gutter) clamp(44px, 8vw, 72px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            /* Bordo ondulato verso la sezione chiara */
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -1px;
+            height: 22px;
+            background: radial-gradient(circle at 12px 0, transparent 12px, var(--crema) 12.5px) repeat-x;
+            background-size: 24px 22px;
+        }
+
+        .hero-logo {
+            width: clamp(150px, 40vw, 210px);
+            margin: 0 auto 22px;
+            animation: sali .8s cubic-bezier(.2, .7, .2, 1) backwards;
+        }
+
+        .occhiello {
+            font-family: var(--font-occhielli);
+            font-size: 18px;
+            color: var(--ocra);
+        }
+
+        .hero .occhiello { color: var(--oro); }
+
+        .hero h1 {
+            font-family: var(--font-titoli);
+            font-variation-settings: 'SOFT' 100, 'WONK' 1;
+            font-weight: 900;
+            font-size: clamp(40px, 10vw, 68px);
+            line-height: 1;
+            margin: 10px 0 16px;
+        }
+
+        .hero-testo {
+            max-width: 32rem;
+            margin: 0 auto;
+            color: var(--testo-su-scuro);
+        }
+
+        /* Sezioni */
+        .sezione {
+            padding: clamp(40px, 8vw, 72px) var(--gutter);
+        }
+
+        .sezione + .sezione { padding-top: 0; }
+
+        .titolo-sezione {
+            font-family: var(--font-titoli);
+            font-variation-settings: 'SOFT' 100, 'WONK' 1;
+            font-weight: 900;
+            font-size: clamp(32px, 7vw, 48px);
+            line-height: 1.05;
+            color: var(--castagna);
+            margin: 6px 0 24px;
+        }
+
+        /* Indizio corrente */
+        .indizio-attivo {
+            background: var(--carta);
+            border: 1px solid var(--bordo);
+            border-radius: clamp(20px, 3vw, 32px);
+            box-shadow: var(--ombra-card);
+            padding: clamp(28px, 6vw, 48px) clamp(22px, 5vw, 48px);
+            text-align: center;
+            position: relative;
+            animation: sali .8s cubic-bezier(.2, .7, .2, 1) .15s backwards;
+        }
+
+        .indizio-attivo .etichetta {
+            display: inline-block;
+            background: var(--petrolio);
+            color: var(--carta);
+            font-family: var(--font-occhielli);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            font-size: 15px;
+            padding: 7px 18px;
+            border-radius: 999px;
+            margin-bottom: 22px;
+        }
+
+        .indizio-attivo blockquote {
+            margin: 0;
+            font-family: var(--font-titoli);
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(22px, 5vw, 32px);
+            line-height: 1.35;
+            color: var(--castagna);
+        }
+
+        .indizio-attivo blockquote::before,
+        .indizio-attivo blockquote::after {
+            color: var(--ocra);
+            font-style: normal;
+            font-weight: 900;
+        }
+
+        .indizio-attivo blockquote::before { content: '« '; }
+        .indizio-attivo blockquote::after { content: ' »'; }
+
+        .indizio-attivo .nota {
+            margin-top: 22px;
+            color: var(--testo-2);
+            font-size: 15px;
+        }
+
+        /* Countdown, come nella home della sagra */
+        .countdown-titolo {
+            font-family: var(--font-occhielli);
+            font-size: clamp(16px, 3.4vw, 22px);
+            color: var(--petrolio);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .countdown-celle {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 120px));
+            gap: clamp(8px, 2vw, 16px);
+            justify-content: center;
+        }
+
+        .countdown-celle div {
+            background: var(--crema);
+            border: 1px solid var(--bordo);
+            border-radius: clamp(14px, 2.4vw, 22px);
+            padding: clamp(10px, 2vw, 16px) 4px clamp(8px, 1.6vw, 12px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .countdown-celle span {
+            font-family: var(--font-titoli);
+            font-weight: 800;
+            font-size: clamp(28px, 7vw, 46px);
+            line-height: 1;
+            color: var(--castagna);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .countdown-celle small {
+            font-size: clamp(12px, 2.2vw, 15px);
+            color: var(--testo-2);
+            margin-top: 4px;
+        }
+
+        .messaggio-finale {
+            font-family: var(--font-titoli);
+            font-weight: 800;
+            font-size: clamp(26px, 6vw, 40px);
+            line-height: 1.15;
+            color: var(--arancio);
+            margin-bottom: 12px;
+        }
+
+        /* Elenco dei momenti */
+        .momenti {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .momento {
+            display: grid;
+            grid-template-columns: 44px 1fr;
+            gap: 16px;
+            align-items: start;
+            background: var(--carta);
+            border: 1px solid var(--bordo);
+            border-radius: var(--raggio);
+            padding: 16px 18px;
+        }
+
+        .momento-icona {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--sabbia);
+            color: var(--testo-2);
+            font-family: var(--font-titoli);
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .momento h3 {
+            font-family: var(--font-occhielli);
+            font-weight: 400;
+            font-size: 18px;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--castagna);
+        }
+
+        .momento .quando {
+            font-size: 14px;
+            color: var(--testo-2);
+        }
+
+        .momento .testo {
+            margin-top: 8px;
+            font-family: var(--font-titoli);
+            font-style: italic;
+            color: var(--testo);
+        }
+
+        .momento--attivo {
+            border: 2px solid var(--ocra);
+            background: #FFF8EA;
+        }
+
+        .momento--attivo .momento-icona {
+            background: var(--ocra);
+            color: var(--castagna-scuro);
+        }
+
+        .momento--passato .momento-icona {
+            background: var(--petrolio);
+            color: var(--carta);
+        }
+
+        .momento--futuro {
+            opacity: .7;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-left: 8px;
+            font-family: var(--font-testo);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: var(--ocra);
+            color: var(--castagna-scuro);
+            vertical-align: middle;
+        }
+
+        .anteprima-avviso {
+            background: var(--oro-chiaro);
+            color: var(--castagna-scuro);
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 8px var(--gutter);
+        }
+
+        /* Piè di pagina */
+        footer {
+            background: var(--castagna-scuro);
+            color: var(--testo-su-scuro);
+            padding: 44px var(--gutter) 28px;
+            text-align: center;
+        }
+
+        .footer-loghi {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 28px;
+            margin-bottom: 24px;
+        }
+
+        .footer-loghi a {
+            display: block;
+            border-radius: 12px;
+        }
+
+        .logo-sagra { width: 130px; }
+
+        footer p { font-size: 15px; }
+
+        footer a { color: var(--oro); }
+
+        footer .piccolo {
+            margin-top: 16px;
+            font-size: 13px;
+            opacity: .75;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 14px 24px;
+            border-radius: 999px;
+            background: var(--castagna);
+            color: var(--carta);
+            margin-top: 18px;
+        }
+
+        .btn:hover { background: var(--castagna-scuro); }
+
+        @keyframes sali {
+            from { opacity: 0; transform: translateY(16px); }
+        }
+
+        @media (max-width: 420px) {
+            .countdown-celle { gap: 6px; }
+            .momento { grid-template-columns: 36px 1fr; gap: 12px; padding: 14px; }
+            .momento-icona { width: 36px; height: 36px; font-size: 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar" id="topbar"></div>
+    <div class="anteprima-avviso" id="anteprima-avviso" hidden></div>
+
+    <header class="hero">
+        <img class="hero-logo" src="img/sagra-logo-chiaro.svg" alt="Sagra della Castagna" width="648" height="563">
+        <p class="occhiello" id="occhiello"></p>
+        <h1 id="titolo"></h1>
+        <p class="hero-testo" id="sottotitolo"></p>
+    </header>
+
+    <main>
+        <section class="sezione" aria-live="polite">
+            <div class="container" id="stato"></div>
+        </section>
+
+        <section class="sezione">
+            <div class="container">
+                <p class="occhiello">Un indizio per ogni momento</p>
+                <h2 class="titolo-sezione">Gli indizi</h2>
+                <ol class="momenti" id="momenti"></ol>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-loghi">
+            <a href="https://www.lasagradellacastagna.net/" target="_blank" rel="noopener" aria-label="Sito della Sagra della Castagna">
+                <img class="logo-sagra" src="img/sagra-logo-chiaro.svg" alt="Sagra della Castagna" width="648" height="563">
+            </a>
+        </div>
+        <p>Programma, menù e informazioni su <a href="https://www.lasagradellacastagna.net/" target="_blank" rel="noopener">lasagradellacastagna.net</a></p>
+        <p class="piccolo">I loghi della Sagra della Castagna appartengono ai rispettivi proprietari.</p>
+    </footer>
+
+    <script>
+        /* =========================================================
+           CONFIGURAZIONE
+           Modifica solo questa parte.
+           - Gli orari usano il fuso italiano: "+01:00" (ora solare,
+             in vigore dal 25 ottobre 2026).
+           - Ogni indizio compare dal suo "inizio" e resta l'indizio
+             del momento fino all'inizio del successivo.
+           - Per provare la pagina in un altro momento aggiungi
+             all'indirizzo, ad esempio:
+             ?anteprima=2026-10-31T21:00
+           ========================================================= */
+        const CONFIG = {
+            occhiello: '47ª Sagra della Castagna',
+            titolo: 'Caccia all\'indizio',
+            sottotitolo: 'Ogni momento della sagra ha il suo indizio. Leggilo, gira tra gli stand e trova il nascondiglio!',
+            topbar: '47ª Sagra della Castagna · San Cipriano Picentino · 30 ottobre – 2 novembre 2026',
+
+            // true: gli indizi già passati restano leggibili nell'elenco
+            mostraIndiziPassati: true,
+
+            // Dopo questo orario la pagina mostra il messaggio di chiusura
+            fineGioco: '2026-11-03T01:00:00+01:00',
+
+            indizi: [
+                {
+                    etichetta: 'Venerdì sera',
+                    inizio: '2026-10-30T17:00:00+01:00',
+                    testo: 'Sono sceso dalla navetta ma devo fare di fretta. Quanta gente, ci si perde, sono caduto dentro al verde.'
+                },
+                {
+                    etichetta: 'Sabato sera',
+                    inizio: '2026-10-31T17:00:00+01:00',
+                    testo: 'Dai giovani in discoteca stavo per arrivare, ma in un ovale mi sono andato a rannicchiare, di fronte alla sala parrocchiale.'
+                },
+                {
+                    etichetta: 'Domenica a pranzo',
+                    inizio: '2026-11-01T09:00:00+01:00',
+                    testo: 'Volevo fare la sfilata, ma non me la sono sentita di scendere questa scalinata.'
+                },
+                {
+                    etichetta: 'Domenica sera',
+                    inizio: '2026-11-01T17:00:00+01:00',
+                    testo: 'Ho fatto la corsa, mi sono stancato e al 58 68 mi sono riposato.'
+                },
+                {
+                    etichetta: 'Lunedì sera',
+                    inizio: '2026-11-02T17:00:00+01:00',
+                    testo: 'Oggi è sagretta, l\'aria è un po\' freschetta. Nel bosco incantato ho trovato riparo, mi sento agile come Super Mario.'
+                }
+            ]
+        };
+        /* ===================== FINE CONFIGURAZIONE ===================== */
+
+        (function() {
+            const indizi = CONFIG.indizi
+                .map(indizio => Object.assign({}, indizio, { data: new Date(indizio.inizio) }))
+                .sort((a, b) => a.data - b.data);
+            const fineGioco = new Date(CONFIG.fineGioco);
+
+            // Preview mode: ?anteprima=YYYY-MM-DDTHH:MM shifts the clock (Italian time)
+            let scarto = 0;
+            const anteprima = new URLSearchParams(location.search).get('anteprima');
+            if (anteprima) {
+                const dataAnteprima = new Date(/[+-]\d\d:\d\d$|Z$/.test(anteprima) ? anteprima : anteprima + '+01:00');
+                if (!isNaN(dataAnteprima)) {
+                    scarto = dataAnteprima - Date.now();
+                    const avviso = document.getElementById('anteprima-avviso');
+                    avviso.textContent = 'Modalità anteprima: ' + formattaData(dataAnteprima, true);
+                    avviso.hidden = false;
+                }
+            }
+
+            function adesso() {
+                return new Date(Date.now() + scarto);
+            }
+
+            function formattaData(data, conGiorno) {
+                const opzioni = { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' };
+                if (conGiorno) {
+                    Object.assign(opzioni, { weekday: 'long', day: 'numeric', month: 'long' });
+                }
+                return data.toLocaleString('it-IT', opzioni);
+            }
+
+            // Index of the clue currently live, -1 before the start, indizi.length after the end
+            function indiceAttivo(ora) {
+                if (ora >= fineGioco) return indizi.length;
+                let attivo = -1;
+                indizi.forEach((indizio, i) => {
+                    if (indizio.data <= ora) attivo = i;
+                });
+                return attivo;
+            }
+
+            function crea(tag, classe, testo) {
+                const el = document.createElement(tag);
+                if (classe) el.className = classe;
+                if (testo !== undefined) el.textContent = testo;
+                return el;
+            }
+
+            function cellaCountdown(valore, unita) {
+                const cella = document.createElement('div');
+                cella.appendChild(crea('span', '', String(valore).padStart(2, '0')));
+                cella.appendChild(crea('small', '', unita));
+                return cella;
+            }
+
+            function renderCountdown(contenitore, ora, obiettivo) {
+                const secondi = Math.max(0, Math.floor((obiettivo - ora) / 1000));
+                const celle = crea('div', 'countdown-celle');
+                celle.appendChild(cellaCountdown(Math.floor(secondi / 86400), 'giorni'));
+                celle.appendChild(cellaCountdown(Math.floor(secondi % 86400 / 3600), 'ore'));
+                celle.appendChild(cellaCountdown(Math.floor(secondi % 3600 / 60), 'minuti'));
+                celle.appendChild(cellaCountdown(secondi % 60, 'secondi'));
+                contenitore.replaceChildren(celle);
+            }
+
+            function renderStato(ora, attivo) {
+                const stato = document.getElementById('stato');
+                const card = crea('div', 'indizio-attivo');
+
+                if (attivo === -1) {
+                    card.appendChild(crea('p', 'countdown-titolo', 'Il primo indizio arriva tra'));
+                    const countdown = crea('div', 'countdown');
+                    countdown.id = 'countdown';
+                    card.appendChild(countdown);
+                    card.appendChild(crea('p', 'nota', indizi[0].etichetta + ' · ' + formattaData(indizi[0].data, true)));
+                } else if (attivo >= indizi.length) {
+                    card.appendChild(crea('p', 'messaggio-finale', 'Il gioco è concluso!'));
+                    card.appendChild(crea('p', '', 'Grazie a tutti per aver giocato con noi. Ci vediamo alla prossima sagra!'));
+                } else {
+                    const indizio = indizi[attivo];
+                    card.appendChild(crea('span', 'etichetta', 'Indizio di ' + indizio.etichetta.toLowerCase()));
+                    card.appendChild(crea('blockquote', '', indizio.testo));
+
+                    const prossimo = indizi[attivo + 1];
+                    if (prossimo) {
+                        card.appendChild(crea('p', 'nota', 'Prossimo indizio: ' + prossimo.etichetta.toLowerCase() + ', ' + formattaData(prossimo.data, true)));
+                    } else {
+                        card.appendChild(crea('p', 'nota', 'È l\'ultimo indizio: buona caccia!'));
+                    }
+                }
+
+                stato.replaceChildren(card);
+            }
+
+            function renderMomenti(attivo) {
+                const lista = document.getElementById('momenti');
+                lista.replaceChildren();
+
+                indizi.forEach((indizio, i) => {
+                    const passato = i < attivo;
+                    const corrente = i === attivo;
+                    const momento = crea('li', 'momento ' + (corrente ? 'momento--attivo' : passato ? 'momento--passato' : 'momento--futuro'));
+
+                    momento.appendChild(crea('div', 'momento-icona', passato ? '✓' : String(i + 1)));
+
+                    const corpo = crea('div');
+                    const titolo = crea('h3', '', indizio.etichetta);
+                    if (corrente) titolo.appendChild(crea('span', 'badge', 'Ora'));
+                    corpo.appendChild(titolo);
+
+                    if (corrente) {
+                        corpo.appendChild(crea('p', 'quando', 'Indizio in corso, lo trovi qui sopra'));
+                    } else if (passato) {
+                        corpo.appendChild(crea('p', 'quando', 'Svelato ' + formattaData(indizio.data, true)));
+                        if (CONFIG.mostraIndiziPassati) {
+                            corpo.appendChild(crea('p', 'testo', indizio.testo));
+                        }
+                    } else {
+                        corpo.appendChild(crea('p', 'quando', '🔒 Si sblocca ' + formattaData(indizio.data, true)));
+                    }
+
+                    momento.appendChild(corpo);
+                    lista.appendChild(momento);
+                });
+            }
+
+            document.getElementById('topbar').textContent = CONFIG.topbar;
+            document.getElementById('occhiello').textContent = CONFIG.occhiello;
+            document.getElementById('titolo').textContent = CONFIG.titolo;
+            document.getElementById('sottotitolo').textContent = CONFIG.sottotitolo;
+
+            // Re-render only when the live clue changes; the countdown ticks every second
+            let ultimoAttivo = null;
+            function aggiorna() {
+                const ora = adesso();
+                const attivo = indiceAttivo(ora);
+                if (attivo !== ultimoAttivo) {
+                    ultimoAttivo = attivo;
+                    renderStato(ora, attivo);
+                    renderMomenti(attivo);
+                }
+                const countdown = document.getElementById('countdown');
+                if (countdown) renderCountdown(countdown, ora, indizi[0].data);
+            }
+
+            aggiorna();
+            setInterval(aggiorna, 1000);
+        })();
+    </script>
+</body>
+</html>
